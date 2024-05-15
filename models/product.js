@@ -3,11 +3,14 @@ const getDb = require('../util/database').getDb;
 const { MongoClient, ObjectId } = require('mongodb');
 
 class Product {
-  constructor(title, price, description, imageUrl) {
+  constructor(title, price, description, imageUrl,id,userId) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
+    this._id=id?new mongodb.ObjectId(id):null;
+    this.userId=userId;
+
   }
 
   save() {
@@ -38,17 +41,17 @@ class Product {
       });
   }
 
-  static fetchSingleProduct(productid) {
-    const db = getDb();
-    
+  static findById(productid) {
+    const db = getDb();   
     return db.collection('products')
        .findOne({_id:new ObjectId(productid)})
       .then(product => {
         console.log(product);
-        return product
+        return product;
       })
       .catch(err => {
         console.log(err);
+        throw err;
       });
   }
 

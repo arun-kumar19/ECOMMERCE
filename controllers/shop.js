@@ -37,7 +37,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   console.log(req.params.productId);
-    Product.fetchSingleProduct(req.params.productId)
+    Product.findById(req.params.productId)
     .then(products => {
       res.render('shop/product-detail', {
         product: products,
@@ -60,6 +60,18 @@ exports.getIndex = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
+
+exports.postCart=(req,res,next)=>{
+const prodId=req.body.productId;
+console.log('prodId:',prodId);
+Product.findById(prodId).then(product=>{
+
+    return req.user.addToCart(product);
+
+}).then(result=>{
+    console.log('result:',result);
+})
+}
 
 /*exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
@@ -120,3 +132,4 @@ exports.postDeleteProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 */
+
