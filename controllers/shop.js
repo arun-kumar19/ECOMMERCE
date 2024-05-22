@@ -70,7 +70,48 @@ Product.findById(prodId).then(product=>{
 
 }).then(result=>{
     console.log('result:',result);
+    res.redirect('/cart');
 })
+}
+
+
+exports.getCart=(req,res,next)=>{
+
+req.user.getCart().then(products=>{
+console.log('proudcts:',products);
+    res.render('shop/cart',{
+        path:'/cart',
+        pageTitle:'Your Cart',
+        products:products
+    });
+}).catch(err=>{
+    console.log(err);
+})
+
+}
+
+exports.postCartDeleteProduct=async (req,res,next)=>{
+try{
+const prodId=req.body.productId;
+console.log('delete prodId:',prodId);
+let items=[];
+const products=await req.user.getCart();
+products.forEach(i => {
+    console.log('i:',i._id);
+    if(i._id.toString()!==prodId.toString()){
+        const arr={productid:i._id,quantity:i.quantity};
+        items.push(arr);
+}})
+console.log('updated cart items:',items.length);
+console.log('updated cart items:',items);
+const responseData=await req.user.updateCart(items);
+console.log('responseData:',responseData);
+res.redirect('/cart');
+}
+catch(err){
+    console.log('something went wrong:',err);
+}
+
 }
 
 /*exports.getEditProduct = (req, res, next) => {

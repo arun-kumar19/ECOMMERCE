@@ -19,7 +19,7 @@ exports.postAddUser = (req, res, next) => {
     else{
     const user=new User(name,mobileno,email,password);
     user.save().then(result=>{
-      console.log("user created=",result);
+      //console.log("user created=",result);
       res.redirect('/shop/login')
     }).catch(err=>{
       console.log(err);
