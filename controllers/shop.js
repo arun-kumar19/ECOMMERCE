@@ -1,4 +1,7 @@
 const Product = require('../models/product');
+const cart=require("../models/cart");
+const Order=require("../models/orders");
+const User=require("../models/user");
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -114,6 +117,44 @@ catch(err){
 
 }
 
+
+exports.postOrder=(req,res,next)=>{
+  const currentUserId=req.user.id;
+  console.log('currentUserId:',currentUserId);
+  const cart=req.user.cart.items;
+  const userid=req.user.id
+  console.log('post order userid:',userid);
+  const order=new Order(null,null,null)
+  order.save(userid,cart).then(result=>{
+    console.log('save result:',result);
+    if(result.insertedCount>0){
+    req.user.updateCart([]).then(result=>{
+      console.log('cart has been empty:',result);
+      
+    }).catch(err=>{
+      console.log('something went wrong during cart empty:',err);
+    })
+    }
+    res.redirect('/orders');
+  }).catch(err=>{
+    console.log('something went wrong during post order:',err);
+  })
+
+  }
+  exports.getOrders=(req,res)=>{
+    const currentUserId=req.user.id;
+    Order.fetchAll(currentUserId).then(products=>{
+      console.log('now result:',products);
+      res.render('shop/cart',{
+        path:'/cart',
+        pageTitle:'Your Cart',
+        products:products
+    });
+
+  }).then(err=>{
+    console.log('err during loading cart items:',err);
+  })
+  }
 /*exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
   if (!editMode) {
