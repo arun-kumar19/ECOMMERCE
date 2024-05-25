@@ -3,13 +3,13 @@ const cart=require("../models/cart");
 const Order=require("../models/orders");
 const User=require("../models/user");
 
-exports.getAddProduct = (req, res, next) => {
+/*exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false
   });
-};
+};*/
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
@@ -27,8 +27,9 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   
-    Product.fetchAll()
+    Product.find()
     .then(products => {
+      console.log(products);
       res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
@@ -37,6 +38,22 @@ exports.getProducts = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
+
+
+exports.getIndex = (req, res, next) => {
+  
+    Product.find()
+    .then(products => {
+      console.log(products);
+      res.render('shop/index', {
+        prods: products,
+        pageTitle: 'all Products',
+        path: '/'
+      });
+    })
+    .catch(err => console.log(err));
+};
+
 
 exports.getProduct = (req, res, next) => {
   console.log(req.params.productId);
@@ -51,20 +68,7 @@ exports.getProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
-exports.getIndex = (req, res, next) => {
-  
-    Product.fetchAll()
-    .then(products => {
-      res.render('shop/index', {
-        prods: products,
-        pageTitle: 'all Products',
-        path: '/'
-      });
-    })
-    .catch(err => console.log(err));
-};
-
-exports.postCart=(req,res,next)=>{
+/*exports.postCart=(req,res,next)=>{
 const prodId=req.body.productId;
 console.log('prodId:',prodId);
 Product.findById(prodId).then(product=>{
@@ -85,7 +89,7 @@ console.log('proudcts:',products);
     res.render('shop/cart',{
         path:'/cart',
         pageTitle:'Your Cart',
-        products:products
+        psroducts:products
     });
 }).catch(err=>{
     console.log(err);

@@ -1,4 +1,4 @@
-const getDb = require('../util/database').getDb;
+/*const getDb = require('../util/database').getDb;
 const { MongoClient, ObjectId } = require('mongodb');
 const cart=require("../models/cart");
 
@@ -150,3 +150,4 @@ class User {
 
 }    
 module.exports = User;
+*/

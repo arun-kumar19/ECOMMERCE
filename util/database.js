@@ -1,4 +1,4 @@
-const mongodb=require("mongodb");
+/*const mongodb=require("mongodb");
 const MongoClient=mongodb.MongoClient;
 
 let _db;
@@ -27,4 +27,4 @@ const getDb=()=>{
 //module.exports=getDb;
 
 exports.mongoConnect=mongoConnect;
-exports.getDb=getDb;
+exports.getDb=getDb;*/

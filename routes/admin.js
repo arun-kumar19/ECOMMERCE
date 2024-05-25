@@ -1,4 +1,4 @@
-const path = require('path');
+ const path = require('path');
 
 const express = require('express');
 
@@ -17,3 +17,4 @@ router.post('/delete-product', adminController.postDeleteProduct);
 
 
 module.exports = router;
+ 

@@ -1,4 +1,4 @@
-const getDb = require('../util/database').getDb;
+/*const getDb = require('../util/database').getDb;
 const { MongoClient, ObjectId } = require('mongodb');
 
 class Order {
@@ -49,3 +49,4 @@ console.log('orders model customerId:',customeruserid);
 }
 
 module.exports = Order;
+*/
