@@ -28,8 +28,10 @@ exports.postAddProduct = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
   
     Product.find()
+    .select('name price')
+    .populate('userId')
     .then(products => {
-      console.log(products);
+      console.log('fetched Products:',products);
       res.render('admin/products', {
         prods: products,
         pageTitle: 'Admin Products',
