@@ -15,10 +15,6 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  password: {
-    type: String,
-    required: true
-  },
   cart: {
     items:[
       {
@@ -30,7 +26,74 @@ const userSchema = new Schema({
   }
 });
 
+userSchema.methods.addToCart=function(product){
+  console.log('product:',product);
+  //console.log('user id:',this);
+    let cartItemIndex=this.cart.items.findIndex(element => element.productId.toString()==product._id.toString());
+    console.log('cartItemIndex:',cartItemIndex);
+    let newQuantity=1;
+    const updatedCartItems=[...this.cart.items]
+    console.log('updatedCartItems:',updatedCartItems);
+      if(cartItemIndex>=0){
+            newQuantity=this.cart.items[cartItemIndex].quantity+1;
+            updatedCartItems[cartItemIndex].quantity=newQuantity;
+            
+            }
+    else{
+      updatedCartItems.push({
+        productId:product._id,
+        quantity:newQuantity
+      })
+    }
+    console.log('updatedCartItems:',updatedCartItems);
+    const updatedCart={
+      items:updatedCartItems
+    };
+console.log('updatedCart:',updatedCart);
+    this.cart=updatedCart;
+ //   return this.save();
+        
+return mongoose.model('User').updateOne(
+  { _id: this._id },
+  { $set: { 'cart.items': updatedCartItems } }
+)
+.then(result => {
+  console.log('Cart updated:', result);
+  return result;
+})
+.catch(err => {
+  console.error('Error updating cart:', err);
+});
+}
 module.exports = mongoose.model('User', userSchema);
+
+userSchema.methods.getCart=function(){
+
+  if(this.cart==null){
+    console.log('cart is empty');
+    return Promise.resolve([]);
+  }
+  const productIds=this.cart.items.map(i=>{
+      return i.productId;
+  });
+  console.log('productIds1:',productIds);
+//  const User = mongoose.model('User',userSchema);
+  return User.find({_id:{$in:productIds}})
+  .then(products=>{
+   console.log('a:',products);
+      return products.map(p=>{
+          console.log('b:',p);
+          return {...p,quantity:this.cart.items.find(i=>{
+              console.log('c:',i);
+              return i.productid.toString()==p._id.toString();
+          }).quantity
+      };
+      });
+     
+  });
+}
+
+
 
 /*const getDb = require('../util/database').getDb;
 const { MongoClient, ObjectId } = require('mongodb');

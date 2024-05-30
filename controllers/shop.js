@@ -70,28 +70,32 @@ exports.getProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
-/*exports.postCart=(req,res,next)=>{
+exports.postCart=(req,res,next)=>{
 const prodId=req.body.productId;
 console.log('prodId:',prodId);
 Product.findById(prodId).then(product=>{
-
     return req.user.addToCart(product);
-
 }).then(result=>{
     console.log('result:',result);
     res.redirect('/cart');
+}).catch(err=>{
+  console.log('err updaring cart:',err);
 })
 }
 
 
 exports.getCart=(req,res,next)=>{
-
-req.user.getCart().then(products=>{
-console.log('proudcts:',products);
+req.user.populate('cart.items.productId').then(result=>{
+  console.log('hello world:',result);
+})
+req.user.populate('cart.items.productId').
+then(user=>{
+console.log('proudcts:',user.cart.items);
+const products=user.cart.items;
     res.render('shop/cart',{
         path:'/cart',
         pageTitle:'Your Cart',
-        psroducts:products
+        products:products
     });
 }).catch(err=>{
     console.log(err);
@@ -99,7 +103,7 @@ console.log('proudcts:',products);
 
 }
 
-exports.postCartDeleteProduct=async (req,res,next)=>{
+/*exports.postCartDeleteProduct=async (req,res,next)=>{
 try{
 const prodId=req.body.productId;
 console.log('delete prodId:',prodId);
