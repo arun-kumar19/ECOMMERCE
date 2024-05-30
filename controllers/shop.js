@@ -3,14 +3,6 @@ const cart=require("../models/cart");
 const Order=require("../models/orders");
 const User=require("../models/user");
 
-/*exports.getAddProduct = (req, res, next) => {
-  res.render('admin/edit-product', {
-    pageTitle: 'Add Product',
-    path: '/admin/add-product',
-    editing: false
-  });
-};*/
-
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
@@ -26,8 +18,7 @@ exports.postAddProduct = (req, res, next) => {
 }
 
 exports.getProducts = (req, res, next) => {
-  
-    Product.find()
+      Product.find()
     .select('name price')
     .populate('userId')
     .then(products => {
@@ -92,6 +83,7 @@ req.user.populate('cart.items.productId').
 then(user=>{
 console.log('proudcts:',user.cart.items);
 const products=user.cart.items;
+console.log('cart products:',products);
     res.render('shop/cart',{
         path:'/cart',
         pageTitle:'Your Cart',
@@ -103,30 +95,23 @@ const products=user.cart.items;
 
 }
 
-/*exports.postCartDeleteProduct=async (req,res,next)=>{
+exports.postCartDeleteProduct=async (req,res,next)=>{
 try{
 const prodId=req.body.productId;
 console.log('delete prodId:',prodId);
-let items=[];
-const products=await req.user.getCart();
-products.forEach(i => {
-    console.log('i:',i._id);
-    if(i._id.toString()!==prodId.toString()){
-        const arr={productid:i._id,quantity:i.quantity};
-        items.push(arr);
-}})
-console.log('updated cart items:',items.length);
-console.log('updated cart items:',items);
-const responseData=await req.user.updateCart(items);
-console.log('responseData:',responseData);
+req.user.removeFromCart(prodId).then(result=>{
+console.log('result post delete:',result);
 res.redirect('/cart');
+}).catch(err=>{
+  console.log('err:',err);
+})
+
 }
 catch(err){
     console.log('something went wrong:',err);
 }
 
 }
-
 
 exports.postOrder=(req,res,next)=>{
   const currentUserId=req.user.id;
@@ -165,7 +150,10 @@ exports.postOrder=(req,res,next)=>{
     console.log('err during loading cart items:',err);
   })
   }
-/*exports.getEditProduct = (req, res, next) => {
+
+
+
+exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
   if (!editMode) {
     return res.redirect('/');
@@ -223,5 +211,12 @@ exports.postDeleteProduct = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
-*/
 
+
+exports.getAddProduct = (req, res, next) => {
+  res.render('admin/edit-product', {
+    pageTitle: 'Add Product',
+    path: '/admin/add-product',
+    editing: false
+  });
+};
