@@ -113,44 +113,51 @@ catch(err){
 
 }
 
-exports.postOrder=(req,res,next)=>{
-  const currentUserId=req.user.id;
-  console.log('currentUserId:',currentUserId);
-  const cart=req.user.cart.items;
-  const userid=req.user.id
-  console.log('post order userid:',userid);
-  const order=new Order(null,null,null)
-  order.save(userid,cart).then(result=>{
-    console.log('save result:',result);
-    if(result.insertedCount>0){
-    req.user.updateCart([]).then(result=>{
-      console.log('cart has been empty:',result);
+exports.postOrder = (req, res, next) => {
+  const currentUserId = req.user.id;
+  console.log('currentUserId:', currentUserId);
+  console.log('req.user:', req.user);
+  User
+  .findById(currentUserId)
+    .populate('cart.items.productId')
+    .then(user => {
+      if (!user) {
+        throw new Error('User not found');
+      }
+      console.log('Populated user:', user);
       
-    }).catch(err=>{
-      console.log('something went wrong during cart empty:',err);
+      // Assuming you have an Order model and want to save the order details
+      const order = new Order({
+        userId: user._id,
+        order:{
+          items: user.cart.items.map(item => {
+            console.log('item:',item);
+          return {
+           
+            productId: { ...item.productId._doc }, // Spread product details
+            quantity: item.quantity
+          };
+        })
+      }
+      });
+
+      return order.save();
     })
-    }
-    res.redirect('/orders');
-  }).catch(err=>{
-    console.log('something went wrong during post order:',err);
-  })
-
-  }
-  exports.getOrders=(req,res)=>{
-    const currentUserId=req.user.id;
-    Order.fetchAll(currentUserId).then(products=>{
-      console.log('now result:',products);
-      res.render('shop/cart',{
-        path:'/cart',
-        pageTitle:'Your Cart',
-        products:products
+    .then(result => {
+      console.log('Order created:', result);
+      
+      // Clear the user's cart
+      req.user.cart.items = [];
+      return req.user.save();
+    })
+    .then(() => {
+      res.redirect('/orders');
+    })
+    .catch(err => {
+      console.log('Something went wrong during post order:', err);
+      next(err); // Pass the error to the next middleware
     });
-
-  }).then(err=>{
-    console.log('err during loading cart items:',err);
-  })
-  }
-
+};
 
 
 exports.getEditProduct = (req, res, next) => {
@@ -220,3 +227,34 @@ exports.getAddProduct = (req, res, next) => {
     editing: false
   });
 };
+
+
+exports.getOrders=(req,res,next)=>{
+
+ const currentUserId=req.user._id;
+ console.log('currentUserId:',currentUserId);
+ let products=[];
+ Order.find({'userId':currentUserId})
+ .then(result=>{
+  console.log('fetch data:',result.length);
+  result.forEach(i=>{
+    console.log('i:',i);
+    item=i.order.items.map(element=>{
+      console.log('element:',element);
+      return {title:element.productId.title,quantity:element.quantity};
+    });
+    products.push([{id:i._id.toString(),product:item}])  
+  });
+  
+  console.log('get orders products=',products);
+  return products
+}).then(orders=>{
+  res.render('shop/orders', {
+    path: '/orders',
+    pageTitle: 'Your Orders',
+    orders: orders
+  });
+}).catch(err=>{
+ console.log('error fetching order details:',err);
+ }) 
+}

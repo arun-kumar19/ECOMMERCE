@@ -1,52 +1,19 @@
-/*const getDb = require('../util/database').getDb;
-const { MongoClient, ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
 
-class Order {
-  constructor(userid, productid, quantity) {
-    this.userid = userid;
-    this.quantity = productid;
-    this.productid = productid;
+const Schema = mongoose.Schema;
 
-  }
+const orderSchema = new Schema({
+  userId: {
+    type: String,
+    required: true
+  },
+  order:{
+    items:[{
+      productId: {type:Object, required:true},
+      quantity:{type:Number,required:true}
+    }]
+  } 
+  
+});
 
-  save(userid,cartproducts) {
-    const db = getDb();
-    console.log('save cartproducts:',cartproducts);
-    const userObjectId=new ObjectId(userid);
-    cartproducts.forEach(element => {
-        element.userId=userObjectId;
-    });
-    return db
-      .collection('Order')
-      .insertMany(cartproducts)
-      .then(result => {
-        console.log(result);
-        return result;
-      })
-      .catch(err => {
-        console.log(err);
-        return err;
-      });
-  }
-
-
-  static fetchAll(customeruserid) {
-    const db = getDb();
-console.log('orders model customerId:',customeruserid);
-    return db
-      .collection('Order').find({userId:customeruserid})
-      .toArray()
-      .then(result => {
-    console.log(result);
-        return result
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-
-}
-
-module.exports = Order;
-*/
+module.exports = mongoose.model('Order', orderSchema);
